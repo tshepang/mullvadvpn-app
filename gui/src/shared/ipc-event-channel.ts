@@ -1,6 +1,6 @@
 import { ipcMain, ipcRenderer, WebContents } from 'electron';
-import log from 'electron-log';
 import * as uuid from 'uuid';
+import log from '../shared/logging';
 
 import { IGuiSettingsState } from './gui-settings-state';
 

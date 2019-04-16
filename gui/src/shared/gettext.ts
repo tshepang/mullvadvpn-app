@@ -1,8 +1,8 @@
-import log from 'electron-log';
 import fs from 'fs';
 import { po } from 'gettext-parser';
 import Gettext from 'node-gettext';
 import path from 'path';
+import log from '../shared/logging';
 
 const SOURCE_LANGUAGE = 'en';
 const LOCALES_DIR = path.resolve(__dirname, '../../locales');

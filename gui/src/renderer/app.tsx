@@ -4,11 +4,11 @@ import {
   replace as replaceHistory,
 } from 'connected-react-router';
 import { ipcRenderer, webFrame } from 'electron';
-import log from 'electron-log';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import log, { ConsoleLogger, IpcLogger } from '../shared/logging';
 
 import { InvalidAccountError } from '../main/errors';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -78,6 +78,8 @@ export default class AppRenderer {
   private loginTimer?: NodeJS.Timeout;
 
   constructor() {
+    this.initLogging();
+
     ipcRenderer.on(
       'update-window-shape',
       (_event: Electron.Event, shapeParams: IWindowShapeParameters) => {
@@ -602,5 +604,9 @@ export default class AppRenderer {
 
   private storeAutoStart(autoStart: boolean) {
     this.reduxActions.settings.updateAutoStart(autoStart);
+  }
+
+  private initLogging() {
+    log.transports = [new ConsoleLogger(), new IpcLogger()];
   }
 }

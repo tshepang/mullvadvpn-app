@@ -1,7 +1,5 @@
 import { execFile } from 'child_process';
 import { app, BrowserWindow, ipcMain, Menu, nativeImage, screen, Tray } from 'electron';
-import log from 'electron-log';
-import * as fs from 'fs';
 import mkdirp from 'mkdirp';
 import * as path from 'path';
 import * as uuid from 'uuid';
@@ -19,6 +17,7 @@ import {
 } from '../shared/daemon-rpc-types';
 import { loadTranslations, messages } from '../shared/gettext';
 import { IpcMainEventChannel } from '../shared/ipc-event-channel';
+import log, { ConsoleLogger, FileLogger, IpcLoggerSource } from '../shared/logging';
 import { getOpenAtLogin, setOpenAtLogin } from './autostart';
 import { ConnectionObserver, DaemonRpc, SubscriptionListener } from './daemon-rpc';
 import GuiSettings from './gui-settings';
@@ -172,37 +171,25 @@ class ApplicationMain {
 
   private initLogging() {
     const logDirectory = this.getLogsDirectory();
-    const format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}][{level}] {text}';
+    // const format = '[{y}-{m}-{d} {h}:{i}:{s}.{ms}][{level}] {text}';
 
     this.logFilePath = path.join(logDirectory, 'frontend.log');
 
-    log.transports.console.format = format;
-    log.transports.file.format = format;
-    if (process.env.NODE_ENV === 'development') {
-      log.transports.console.level = 'debug';
+    // create log directory
+    mkdirp.sync(logDirectory);
 
-      // Disable log file in development
-      log.transports.file.level = false;
-    } else {
-      // Create log folder
-      mkdirp.sync(logDirectory);
+    // setup loggers
+    const fileLogger = new FileLogger(this.logFilePath);
+    log.transports = [new ConsoleLogger(), fileLogger];
 
-      // Backup previous log file if it exists
-      try {
-        fs.accessSync(this.logFilePath);
-        this.oldLogFilePath = path.join(logDirectory, 'frontend.old.log');
-        fs.renameSync(this.logFilePath, this.oldLogFilePath);
-      } catch (error) {
-        // No previous log file exists
-      }
+    // setup the IPC proxy between renderer -> main
+    // @ts-ignore: ignore unused value.
+    const ipcLoggerSource = new IpcLoggerSource(log);
 
-      // Configure logging to file
-      log.transports.console.level = 'debug';
-      log.transports.file.level = 'debug';
-      log.transports.file.file = this.logFilePath;
+    // open file logger asynchronously
+    fileLogger.open();
 
-      log.debug(`Logging to ${this.logFilePath}`);
-    }
+    log.debug(`Logging to ${this.logFilePath}`);
   }
 
   // Returns platform specific logs folder for application

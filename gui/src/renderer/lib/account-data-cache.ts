@@ -1,5 +1,5 @@
-import log from 'electron-log';
 import { AccountToken, IAccountData } from '../../shared/daemon-rpc-types';
+import log from '../../shared/logging';
 
 export enum AccountFetchRetryAction {
   stop,

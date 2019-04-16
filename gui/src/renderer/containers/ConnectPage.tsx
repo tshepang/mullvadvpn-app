@@ -1,6 +1,5 @@
 import { push } from 'connected-react-router';
 import { shell } from 'electron';
-import log from 'electron-log';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { sprintf } from 'sprintf-js';
@@ -12,6 +11,7 @@ import {
 import Connect from '../components/Connect';
 import AccountExpiry from '../lib/account-expiry';
 import userInterfaceActions from '../redux/userinterface/actions';
+import log from '../../shared/logging';
 
 import { IReduxState, ReduxDispatch } from '../redux/store';
 import { ISharedRouteProps } from '../routes';

@@ -1,7 +1,7 @@
 import { app } from 'electron';
-import log from 'electron-log';
 import * as fs from 'fs';
 import * as path from 'path';
+import log from '../shared/logging';
 
 import { IGuiSettingsState } from '../shared/gui-settings-state';
 

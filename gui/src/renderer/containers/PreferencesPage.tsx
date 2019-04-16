@@ -1,8 +1,8 @@
 import { goBack } from 'connected-react-router';
-import log from 'electron-log';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Preferences from '../components/Preferences';
+import log from '../../shared/logging';
 
 import { IReduxState, ReduxDispatch } from '../redux/store';
 import { ISharedRouteProps } from '../routes';

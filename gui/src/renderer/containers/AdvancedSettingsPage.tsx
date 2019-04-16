@@ -1,10 +1,10 @@
 import { goBack } from 'connected-react-router';
-import log from 'electron-log';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { RelayProtocol } from '../../shared/daemon-rpc-types';
 import AdvancedSettings from '../components/AdvancedSettings';
 import RelaySettingsBuilder from '../lib/relay-settings-builder';
+import log from '../../shared/logging';
 
 import { RelaySettingsRedux } from '../redux/settings/reducers';
 import { IReduxState, ReduxDispatch } from '../redux/store';

@@ -1,10 +1,10 @@
 import assert from 'assert';
-import log from 'electron-log';
 import { EventEmitter } from 'events';
 import jsonrpc from 'jsonrpc-lite';
 import * as net from 'net';
 import StreamValues from 'stream-json/streamers/StreamValues';
 import * as uuid from 'uuid';
+import log from '../shared/logging';
 
 export interface IUnansweredRequest {
   resolve: (value: any) => void;
@@ -164,7 +164,7 @@ export default class JsonRpcClient<T> extends EventEmitter {
   }
 
   public async subscribe(event: string, listener: (value: any) => void): Promise<void> {
-    log.silly(`Adding a listener for ${event}`);
+    log.debug(`Adding a listener for ${event}`);
 
     try {
       const subscriptionId = await this.send(`${event}_subscribe`);
@@ -202,7 +202,7 @@ export default class JsonRpcClient<T> extends EventEmitter {
       });
 
       try {
-        log.silly('Sending message', id, action);
+        log.debug('Sending message', id, action);
         transport.send(JSON.stringify(message));
       } catch (error) {
         log.error(`Failed sending RPC message "${action}": ${error.message}`);
@@ -266,7 +266,7 @@ export default class JsonRpcClient<T> extends EventEmitter {
     const listener = this.subscriptions.get(subscriptionId);
 
     if (listener) {
-      log.silly(`Got notification for ${message.payload.method}`);
+      log.debug(`Got notification for ${message.payload.method}`);
       listener(message.payload.params.result);
     } else {
       log.warn(`Got notification for ${message.payload.method} but no one is listening for it`);
@@ -279,7 +279,7 @@ export default class JsonRpcClient<T> extends EventEmitter {
     this.unansweredRequests.delete(id);
 
     if (request) {
-      log.silly('Got answer to', id, message.type);
+      log.debug('Got answer to', id, message.type);
 
       clearTimeout(request.timerId);
 

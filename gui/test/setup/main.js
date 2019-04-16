@@ -1,4 +1,3 @@
-const log = require('electron-log');
+const log = require('../shared/logging');
 
-log.transports.console.level = false;
-log.transports.file.level = false;
+log.transports = [];

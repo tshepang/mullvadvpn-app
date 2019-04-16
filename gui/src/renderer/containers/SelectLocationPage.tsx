@@ -1,10 +1,10 @@
 import { goBack } from 'connected-react-router';
-import log from 'electron-log';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { RelayLocation } from '../../shared/daemon-rpc-types';
 import SelectLocation from '../components/SelectLocation';
 import RelaySettingsBuilder from '../lib/relay-settings-builder';
+import log from '../../shared/logging';
 
 import { IReduxState, ReduxDispatch } from '../redux/store';
 import { ISharedRouteProps } from '../routes';
