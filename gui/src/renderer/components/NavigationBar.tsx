@@ -1,6 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Animated, Button, Component, Styles, Text, Types, UserInterface, View } from 'reactxp';
+import {
+  Animated,
+  Button,
+  Component,
+  Styles,
+  Text,
+  TextInput,
+  Types,
+  UserInterface,
+  View,
+} from 'reactxp';
 import { colors } from '../../config.json';
 import CustomScrollbars, { IScrollEvent } from './CustomScrollbars';
 import ImageView from './ImageView';
@@ -83,6 +93,22 @@ const styles = {
     icon: Styles.createViewStyle({
       opacity: 0.6,
       marginRight: 8,
+    }),
+  },
+  searchBar: {
+    container: Styles.createViewStyle({
+      flexDirection: 'row',
+      paddingHorizontal: 13,
+      paddingVertical: 5,
+      borderRadius: 20,
+      backgroundColor: colors.white,
+      alignItems: 'center',
+    }),
+    input: Styles.createTextInputStyle({
+      flex: 1,
+      fontFamily: 'Open Sans',
+      fontSize: 16,
+      marginLeft: 3,
     }),
   },
   scopeBar: {
@@ -588,6 +614,31 @@ export class ScopeBarItem extends Component<IScopeBarItemProps> {
 
   private onHoverEnd = () => {
     this.setState({ isHovered: false });
+  };
+}
+
+export class SearchBar extends Component<Types.TextInputProps> {
+  private textInputRef = React.createRef<TextInput>();
+
+  public render() {
+    return (
+      <View style={styles.searchBar.container} onPress={this.onPress}>
+        <ImageView source="icon-search" width={16} height={16} tintColor={'gray'} />
+        <TextInput
+          ref={this.textInputRef}
+          placeholderTextColor={'gray'}
+          {...this.props}
+          style={[styles.searchBar.input, this.props.style]}
+        />
+      </View>
+    );
+  }
+
+  private onPress = () => {
+    const textInput = this.textInputRef.current;
+    if (textInput && !textInput.isFocused()) {
+      textInput.focus();
+    }
   };
 }
 
