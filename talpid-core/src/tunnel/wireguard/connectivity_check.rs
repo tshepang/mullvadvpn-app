@@ -137,6 +137,7 @@ impl ConnectivityMonitor {
                 }
             } else {
                 self.reset_pinger();
+                self.conn_state.reset_after_suspension(current_iteration);
             }
             last_iteration = current_iteration;
         }
@@ -281,6 +282,19 @@ impl ConnState {
             }
         }
     }
+
+    pub fn reset_after_suspension(&mut self, now: Instant) {
+        match self {
+            ConnState::Connecting { .. } => {}
+            ConnState::Connected {
+                ref mut rx_timestamp,
+                ..
+            } => {
+                *rx_timestamp = now;
+            }
+        }
+    }
+
     // check if last time data was received is too long ago
     pub fn rx_timed_out(&self) -> bool {
         match self {
