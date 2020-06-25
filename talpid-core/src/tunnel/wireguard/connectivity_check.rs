@@ -124,7 +124,22 @@ impl ConnectivityMonitor {
     }
 
     fn wait_loop(&mut self, iter_delay: Duration) -> Result<(), Error> {
-        while self.check_connectivity()? && !self.should_shut_down(iter_delay) {}
+        let mut last_iteration = Instant::now();
+        while !self.should_shut_down(iter_delay) {
+            let mut current_iteration = Instant::now();
+            let time_slept = current_iteration - last_iteration;
+            if time_slept < (iter_delay * 2) {
+                let start = Instant::now();
+                self.check_connectivity()?;
+                let end = Instant::now();
+                if end - start > Duration::from_secs(1) {
+                    current_iteration = end;
+                }
+            } else {
+                self.reset_pinger();
+            }
+            last_iteration = current_iteration;
+        }
         Ok(())
     }
 
@@ -137,8 +152,7 @@ impl ConnectivityMonitor {
                 let new_stats = new_stats?;
 
                 if self.conn_state.update(now, new_stats) {
-                    self.initial_ping_timestamp = None;
-                    self.num_pings_sent = 0;
+                    self.reset_pinger();
                     return Ok(true);
                 }
 
@@ -184,6 +198,12 @@ impl ConnectivityMonitor {
         self.initial_ping_timestamp
             .map(|initial_ping_timestamp| initial_ping_timestamp.elapsed() > PING_TIMEOUT)
             .unwrap_or(false)
+    }
+
+    fn reset_pinger(&mut self) {
+        self.initial_ping_timestamp = None;
+        self.num_pings_sent = 0;
+        self.pinger.reset();
     }
 }
 

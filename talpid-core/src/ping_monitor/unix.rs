@@ -35,6 +35,11 @@ impl Pinger {
         Ok(())
     }
 
+    pub fn reset(&mut self) {
+        // Dropping all running ping process handles results in them being killed.
+        self.processes = vec![];
+    }
+
     fn try_deplete_process_list(&mut self) {
         self.processes.retain(|child| {
             match child.try_wait() {
