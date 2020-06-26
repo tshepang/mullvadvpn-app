@@ -204,6 +204,7 @@ impl ConnectivityMonitor {
     fn reset_pinger(&mut self) {
         self.initial_ping_timestamp = None;
         self.num_pings_sent = 0;
+        #[cfg(unix)]
         self.pinger.reset();
     }
 }
